@@ -35,6 +35,7 @@ const signup = async (req, res) => {
     const verificationToken = nanoid();
 
     const newUser = await User.create({
+        username: email,
         ...req.body,
         password: hashedPassword,
         verificationToken,
@@ -59,6 +60,7 @@ const signup = async (req, res) => {
             username: newUser.username,
             email: newUser.email,
             avatarURL: newUser.avatar.url,
+            gender: newUser.gender,
         }
     })
 }
@@ -132,6 +134,7 @@ const login = async (req, res) => {
             username: user.username,
             email,
             avatarURL: user.avatar.url,
+            gender: user.gender,
         },
         token,
     })
@@ -170,7 +173,7 @@ const uploadAvatar = async (req, res) => {
     } catch (error) { }
     
     const cloudImage = await cloudinary.uploader.upload(path,
-        { folder: `avatars/${user.username.toLowerCase()}` }
+        { folder: `avatars/${user._id}` }
     );
 
     const imageTransformatedURL = cloudinary.url(cloudImage.public_id,
@@ -196,16 +199,24 @@ const userInfo = async (req, res) => {
             username: user.username,
             email: user.email,
             avatarURL: user.avatar.url,
+            gender: user.gender,
         },
     })
 }
 
 const editInfo = async (req, res) => {
-    const { password: newPassword } = req.body;
-    const { _id } = req.user;
+    const { oldPassword, newPassword } = req.body;
+    const { _id, password } = req.user;
     let hashedNewPassword = undefined;
-    if (newPassword) {
-        hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    if (newPassword !== 'undefined') {
+        const comparedPassword = await bcrypt.compare(oldPassword, password);
+
+        if (comparedPassword) {
+            hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        } else {
+            throw HttpError(401, 'Password is wrong');
+        }
     }
 
     const updatedUser = await User.findByIdAndUpdate(_id,
@@ -219,6 +230,7 @@ const editInfo = async (req, res) => {
             username: updatedUser.username,
             email: updatedUser.email,
             avatarURL: updatedUser.avatar.url,
+            gender: updatedUser.gender,
         }
     })
 }

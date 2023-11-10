@@ -27,6 +27,10 @@ const userSchema = new Schema({
             default: null,
         },
     },
+    gender: {
+        type: String,
+        default: 'male'
+    },
     token: String,
     verificationToken: {
         type: String,
@@ -41,14 +45,14 @@ const userSchema = new Schema({
 const User = model('user', userSchema);
 
 const userSignupSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    username: Joi.string().min(3).max(32),
     email: Joi.string().pattern(emailRegex).required(),
-    password: Joi.string().min(8).max(48).required(),
+    password: Joi.string().min(8).max(64).required(),
 });
 
 const userLoginSchema = Joi.object({
     email: Joi.string().pattern(emailRegex).required(),
-    password: Joi.string().min(8).max(48).required(),
+    password: Joi.string().min(8).max(64).required(),
 });
 
 const userEmailSchema = Joi.object({
@@ -56,9 +60,11 @@ const userEmailSchema = Joi.object({
 });
 
 const userEditSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    username: Joi.string().min(3).max(32).required(),
     email: Joi.string().pattern(emailRegex).required(),
-    password: Joi.string().min(8).max(48),
+    gender: Joi.string().valid('male').valid('female').required(),
+    newPassword: Joi.string().min(8).max(64),
+    oldPassword: Joi.string().min(8).max(64)
 });
 
 export {
