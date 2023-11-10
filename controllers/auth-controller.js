@@ -188,6 +188,41 @@ const uploadAvatar = async (req, res) => {
     });
 }
 
+const userInfo = async (req, res) => {
+    const user = req.user;
+
+    res.json({
+        user: {
+            username: user.username,
+            email: user.email,
+            avatarURL: user.avatar.url,
+        },
+    })
+}
+
+const editInfo = async (req, res) => {
+    const { password: newPassword } = req.body;
+    const { _id } = req.user;
+    let hashedNewPassword = undefined;
+    if (newPassword) {
+        hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(_id,
+        { ...req.body, password: hashedNewPassword },
+        { new: true }
+    );
+
+    res.json({
+        message: 'User info was edited with success',
+        user: {
+            username: updatedUser.username,
+            email: updatedUser.email,
+            avatarURL: updatedUser.avatar.url,
+        }
+    })
+}
+
 export const authCtrl = {
     signup: ctrlWrapper(signup),
     verify: ctrlWrapper(verify),
@@ -196,4 +231,6 @@ export const authCtrl = {
     currentUser: ctrlWrapper(currentUser),
     logout: ctrlWrapper(logout),
     uploadAvatar: ctrlWrapper(uploadAvatar),
+    userInfo: ctrlWrapper(userInfo),
+    editInfo: ctrlWrapper(editInfo),
 }
