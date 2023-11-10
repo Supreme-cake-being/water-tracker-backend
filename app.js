@@ -3,7 +3,7 @@ import logger from "morgan";
 import cors from "cors";
 import "dotenv/config";
 
-// import authRouter from "./routes/api/auth.js";
+import authRouter from "./routes/api/auth.js";
 // import recordsRouter from "./routes/api/records.js";
 
 const app = express();
@@ -14,7 +14,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-// app.use("/api/users", authRouter);
+app.use("/api/users", authRouter);
 // app.use("/api/records", recordsRouter);
 
 app.use((req, res) => {
