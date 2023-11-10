@@ -123,9 +123,23 @@ const login = async (req, res) => {
 
 }
 
+const currentUser = async (req, res) => {
+    const { email } = req.user;
+    const user = await User.findOne({ email });
+
+    res.json({
+        user: {
+            username: user.username,
+            email,
+            avatarURL: user.avatar.url,
+        },
+    })
+}
+
 export const authCtrl = {
     signup: ctrlWrapper(signup),
     verify: ctrlWrapper(verify),
     resendEmail: ctrlWrapper(resendEmail),
     login: ctrlWrapper(login),
+    currentUser: ctrlWrapper(currentUser),
 }

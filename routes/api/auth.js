@@ -2,6 +2,7 @@ import express from 'express';
 import { authCtrl } from '../../controllers/auth-controller.js';
 import { validateBody } from '../../decorators/index.js';
 import { userEmailSchema, userLoginSchema, userSignupSchema } from '../../models/User.js';
+import authenticate from '../../middlewares/authenticate.js';
 
 const authRouter = express.Router(); 
 
@@ -16,5 +17,7 @@ authRouter.get('/verify/:verificationToken', authCtrl.verify);
 authRouter.post('/verify', userEmailValidate, authCtrl.resendEmail);
 
 authRouter.post('/login', userLoginValidate, authCtrl.login);
+
+authRouter.get('/current', authenticate, authCtrl.currentUser);
 
 export default authRouter;
