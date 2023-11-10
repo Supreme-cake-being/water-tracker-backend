@@ -136,10 +136,18 @@ const currentUser = async (req, res) => {
     })
 }
 
+const logout = async (req, res) => {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate(_id, { token: null });
+
+    res.status(204).json();
+} 
+
 export const authCtrl = {
     signup: ctrlWrapper(signup),
     verify: ctrlWrapper(verify),
     resendEmail: ctrlWrapper(resendEmail),
     login: ctrlWrapper(login),
     currentUser: ctrlWrapper(currentUser),
+    logout: ctrlWrapper(logout),
 }

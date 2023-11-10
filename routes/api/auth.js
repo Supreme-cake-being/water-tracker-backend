@@ -20,4 +20,6 @@ authRouter.post('/login', userLoginValidate, authCtrl.login);
 
 authRouter.get('/current', authenticate, authCtrl.currentUser);
 
+authRouter.post('/logout', authenticate, authCtrl.logout);
+
 export default authRouter;
