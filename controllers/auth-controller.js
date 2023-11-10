@@ -150,6 +150,7 @@ const currentUser = async (req, res) => {
             username: user.username,
             email,
             avatarURL: user.avatar.url,
+            gender: user.gender,
         },
     })
 }
