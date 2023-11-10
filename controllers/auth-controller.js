@@ -4,6 +4,7 @@ import { ctrlWrapper } from '../decorators/index.js';
 import HttpError from '../helpers/HttpError.js';
 import { User } from '../models/User.js';
 import sendEmail from '../helpers/sendEmail.js';
+import jwt from 'jsonwebtoken';
 
 const { JWT_SECRET, BASE_URL } = process.env;
 
@@ -26,7 +27,7 @@ const signup = async (req, res) => {
 
     const emailVerificationData = {
         to: newUser.email,
-        subject: 'Account verification',
+        subject: 'Email verification',
         html: `
             <strong>To verify your accont, please
                 <a href='${BASE_URL}/api/users/verify/${verificationToken}'>
@@ -74,7 +75,7 @@ const resendEmail = async (req, res) => {
 
     const emailVerificationData = {
         to: user.email,
-        subject: 'Account verification',
+        subject: 'Email verification',
         html: `
             <strong>To verify your accont, please
                 <a href='${BASE_URL}/api/users/verify/${user.verificationToken}'>
@@ -89,8 +90,42 @@ const resendEmail = async (req, res) => {
     res.json({ message: 'Verification email sent' });
 }
 
+const login = async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if(!user) {
+        throw HttpError(401, 'Email or password is wrong');
+    }
+
+    if (!user.verify) {
+        throw HttpError(401, 'Email is not already verifyed');
+    }
+
+    const comparedPassword = await bcrypt.compare(password, user.password);
+
+    if (!comparedPassword) {
+        throw HttpError(401, 'Email or password is wrong');
+    }
+
+    const payload = { id: user._id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+    await User.findByIdAndUpdate(user._id, { token });
+
+    res.json({
+        user: {
+            username: user.username,
+            email,
+            avatarURL: user.avatar.url,
+        },
+        token,
+    })
+
+}
+
 export const authCtrl = {
     signup: ctrlWrapper(signup),
     verify: ctrlWrapper(verify),
     resendEmail: ctrlWrapper(resendEmail),
+    login: ctrlWrapper(login),
 }
