@@ -6,9 +6,29 @@ const getAll = async (req, res, next) => {
 
   const records = await Record.find({ month });
 
-  //   const result = records.reduce((record, _, accumulator) => {
-  //     console.log(accumulator);
-  //   }, []);
+  const tempResult = records.reduce((accumulator, record, index) => {
+    if (!accumulator[record.day]) {
+      return {
+        ...accumulator,
+        [record.day]: {
+          day: record.day,
+          overall: record.dosage,
+          servings: 1,
+        },
+      };
+    } else {
+      return {
+        ...accumulator,
+        [record.day]: {
+          day: record.day,
+          overall: accumulator[record.day].overall + record.dosage,
+          servings: accumulator[record.day].servings + 1,
+        },
+      };
+    }
+  }, {});
+
+  const result = [...Object.values(tempResult)];
 
   res.json(result);
 };

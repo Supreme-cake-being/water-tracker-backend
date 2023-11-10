@@ -76,7 +76,7 @@ export const recordAddSchema = Joi.object({
 export const recordUpdateSchema = Joi.object({
   dosage: Joi.number().min(1).required(),
   time: Joi.string().required(),
-});
+}).messages(errorMessages);
 
 const Record = model('record', recordSchema);
 
