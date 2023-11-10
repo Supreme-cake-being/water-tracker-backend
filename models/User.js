@@ -22,7 +22,10 @@ const userSchema = new Schema({
             type: String,
             default: null,
         },
-        publicId: String,
+        publicId: {
+            type: String,
+            default: null,
+        },
     },
     token: String,
     verificationToken: {

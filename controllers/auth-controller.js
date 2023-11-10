@@ -5,8 +5,23 @@ import HttpError from '../helpers/HttpError.js';
 import { User } from '../models/User.js';
 import sendEmail from '../helpers/sendEmail.js';
 import jwt from 'jsonwebtoken';
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs/promises';
 
-const { JWT_SECRET, BASE_URL } = process.env;
+const { 
+    JWT_SECRET, 
+    BASE_URL, 
+    CLOUDINARU_CLOUD_NAME, 
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+} = process.env;
+
+cloudinary.config({
+    cloud_name: CLOUDINARU_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
+    secure: true,
+});
 
 const signup = async (req, res) => {
     const { email, password } = req.body;
@@ -143,6 +158,36 @@ const logout = async (req, res) => {
     res.status(204).json();
 } 
 
+const uploadAvatar = async (req, res) => {
+    const { path } = req.file;
+    const user = req.user;
+
+    try {
+        const currentAvatar = await cloudinary.api.resource(user.avatar.publicId);
+        if (currentAvatar) {
+            await cloudinary.uploader.destroy(currentAvatar.public_id);
+        }
+    } catch (error) { }
+    
+    const cloudImage = await cloudinary.uploader.upload(path,
+        { folder: `avatars/${user.username.toLowerCase()}` }
+    );
+
+    const imageTransformatedURL = cloudinary.url(cloudImage.public_id,
+        { width: 300, height: 300, crop: 'fill', gravity: 'faces' }
+    );
+
+    await fs.unlink(path);
+
+    await User.findByIdAndUpdate(user._id, {
+        avatar: { url: imageTransformatedURL, publicId: cloudImage.public_id }
+    });
+
+    res.json({
+        avatarURL: imageTransformatedURL,
+    });
+}
+
 export const authCtrl = {
     signup: ctrlWrapper(signup),
     verify: ctrlWrapper(verify),
@@ -150,4 +195,5 @@ export const authCtrl = {
     login: ctrlWrapper(login),
     currentUser: ctrlWrapper(currentUser),
     logout: ctrlWrapper(logout),
+    uploadAvatar: ctrlWrapper(uploadAvatar),
 }
