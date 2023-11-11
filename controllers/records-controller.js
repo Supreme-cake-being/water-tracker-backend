@@ -3,9 +3,9 @@ import Record from '../models/Record.js';
 
 const getAll = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const { month } = req.body;
+  const { month, year } = req.body;
 
-  const records = await Record.find({ owner, month });
+  const records = await Record.find({ owner, month, year });
 
   const tempResult = records.reduce((accumulator, record) => {
     if (!accumulator[record.day]) {
@@ -36,9 +36,20 @@ const getAll = async (req, res, next) => {
 
 const getAllToday = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const { day, month } = req.body;
+  const { day, month, year } = req.body;
 
-  const result = await Record.find({ owner, day, month });
+  const records = await Record.find({ owner, day, month, year });
+  const result = records
+    .map(({ _id, dosage, time }) => {
+      return { _id, dosage, time };
+    })
+    .sort((currentItem, nextItem) =>
+      currentItem.time < nextItem.time
+        ? -1
+        : currentItem.time > nextItem.time
+        ? 1
+        : 0
+    );
 
   res.json(result);
 };
@@ -52,7 +63,9 @@ const getById = async (req, res, next) => {
     throw HttpError(404, 'Not found');
   }
 
-  res.json(result);
+  const { _id, dosage, time } = result;
+
+  res.json({ _id, dosage, time });
 };
 
 const add = async (req, res, next) => {

@@ -5,6 +5,8 @@ import { handleSaveError, runValidatorsAtUpdate } from './hooks.js';
 const errorMessages = {
   'string.base': '{#label} must be a string',
   'string.empty': '{#label} cannot be empty',
+  'number.min': '{#label} should not be less than {#limit} ',
+  'number.max': '{#label} should not be greater than {#limit} ',
   'any.required': '{#label} is required',
 };
 
@@ -44,7 +46,7 @@ const recordSchema = new Schema(
     },
     year: {
       type: Number,
-      required: false,
+      required: [true, 'Year is required'],
     },
     owner: {
       type: Schema.Types.ObjectId,
@@ -71,6 +73,7 @@ export const recordAddSchema = Joi.object({
   month: Joi.string()
     .valid(...months)
     .required(),
+  year: Joi.number().required(),
 }).messages(errorMessages);
 
 export const recordUpdateSchema = Joi.object({
