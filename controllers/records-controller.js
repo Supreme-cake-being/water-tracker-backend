@@ -2,11 +2,12 @@ import { ctrlWrapper } from '../decorators/index.js';
 import Record from '../models/Record.js';
 
 const getAll = async (req, res, next) => {
+  const { _id: owner } = req.user;
   const { month } = req.body;
 
-  const records = await Record.find({ month });
+  const records = await Record.find({ owner, month });
 
-  const tempResult = records.reduce((accumulator, record, index) => {
+  const tempResult = records.reduce((accumulator, record) => {
     if (!accumulator[record.day]) {
       return {
         ...accumulator,
@@ -34,17 +35,19 @@ const getAll = async (req, res, next) => {
 };
 
 const getAllToday = async (req, res, next) => {
+  const { _id: owner } = req.user;
   const { day, month } = req.body;
 
-  const result = await Record.find({ day, month });
+  const result = await Record.find({ owner, day, month });
 
   res.json(result);
 };
 
 const getById = async (req, res, next) => {
+  const { _id: owner } = req.user;
   const { recordId } = req.params;
 
-  const result = await Record.findOne({ _id: recordId });
+  const result = await Record.findOne({ _id: recordId, owner });
   if (!result) {
     throw HttpError(404, 'Not found');
   }
@@ -53,19 +56,20 @@ const getById = async (req, res, next) => {
 };
 
 const add = async (req, res, next) => {
-  //   const owner = req.user;
+  const owner = req.user;
 
   const result = await Record.create({
     ...req.body,
+    owner,
   });
   res.status(201).json(result);
 };
 
 const deleteById = async (req, res, next) => {
-  //   const { _id: owner, role } = req.user;
+  const { _id: owner } = req.user;
   const { recordId } = req.params;
 
-  const result = await Record.findOneAndDelete({ _id: recordId });
+  const result = await Record.findOneAndDelete({ _id: recordId, owner });
 
   if (!result) {
     throw HttpError(404, 'Not found');
@@ -75,10 +79,13 @@ const deleteById = async (req, res, next) => {
 };
 
 const updateById = async (req, res, next) => {
-  //   const { _id: owner, role } = req.user;
+  const { _id: owner } = req.user;
   const { recordId } = req.params;
 
-  const result = await Record.findOneAndUpdate({ _id: recordId }, req.body);
+  const result = await Record.findOneAndUpdate(
+    { _id: recordId, owner },
+    req.body
+  );
   if (!result) {
     throw HttpError(404, 'Not found');
   }

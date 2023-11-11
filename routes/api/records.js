@@ -1,7 +1,7 @@
 import express from 'express';
 import recordController from '../../controllers/records-controller.js';
 import {
-  //   authenticate,
+  authenticate,
   isEmptyBody,
   isValidId,
 } from '../../middlewares/index.js';
@@ -13,15 +13,15 @@ const recordUpdateValidate = validateBody(recordUpdateSchema);
 
 const router = express.Router();
 
-router.get('/', recordController.getAll);
+router.get('/', authenticate, recordController.getAll);
 
-router.get('/today', recordController.getAllToday);
+router.get('/today', authenticate, recordController.getAllToday);
 
-router.get('/:recordId', isValidId, recordController.getById);
+router.get('/:recordId', authenticate, isValidId, recordController.getById);
 
 router.post(
   '/',
-  //   authenticate,
+  authenticate,
   isEmptyBody,
   recordAddValidate,
   recordController.add
@@ -29,14 +29,14 @@ router.post(
 
 router.delete(
   '/:recordId',
-  //   authenticate,
+  authenticate,
   isValidId,
   recordController.deleteById
 );
 
 router.put(
   '/:recordId',
-  //   authenticate,
+  authenticate,
   isValidId,
   isEmptyBody,
   recordUpdateValidate,
