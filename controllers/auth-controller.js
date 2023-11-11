@@ -210,7 +210,7 @@ const editInfo = async (req, res) => {
     const { _id, password } = req.user;
     let hashedNewPassword = undefined;
 
-    if (newPassword !== 'undefined') {
+    if (newPassword) {
         const comparedPassword = await bcrypt.compare(oldPassword, password);
 
         if (comparedPassword) {
