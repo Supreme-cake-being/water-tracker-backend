@@ -9,6 +9,7 @@ import {
 } from '../../models/User.js';
 import authenticate from '../../middlewares/authenticate.js';
 import upload from '../../middlewares/upload.js';
+import isEmptyBody from '../../middlewares/isEmptyBody.js';
 
 const authRouter = express.Router(); 
 
@@ -17,13 +18,13 @@ const userLoginValidate = validateBody(userLoginSchema);
 const userEmailValidate = validateBody(userEmailSchema);
 const userEditValidate = validateBody(userEditSchema);
 
-authRouter.post('/signup', userSignupValidate, authCtrl.signup);
+authRouter.post('/signup', isEmptyBody, userSignupValidate, authCtrl.signup);
 
 authRouter.get('/verify/:verificationToken', authCtrl.verify);
 
 authRouter.post('/verify', userEmailValidate, authCtrl.resendEmail);
 
-authRouter.post('/login', userLoginValidate, authCtrl.login);
+authRouter.post('/login', isEmptyBody, userLoginValidate, authCtrl.login);
 
 authRouter.get('/current', authenticate, authCtrl.currentUser);
 
@@ -33,6 +34,6 @@ authRouter.patch('/avatars', upload.single('avatar'), authenticate, authCtrl.upl
 
 authRouter.get('/info', authenticate, authCtrl.userInfo);
 
-authRouter.put('/', authenticate, userEditValidate, authCtrl.editInfo);
+authRouter.put('/', authenticate, isEmptyBody, userEditValidate, authCtrl.editInfo);
 
 export default authRouter;
