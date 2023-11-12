@@ -15,8 +15,8 @@
             "description": "Endpoints for user authorization and authentication"
         },
         {
-            "name": "Water",
-            "description": "Endpoints for manipulation with water info"
+            "name": "Records",
+            "description": "Endpoints for manipulation with water info records"
         }
     ],
     "paths": {
@@ -277,7 +277,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RegistrationResponse"
+                                    "$ref": "#/components/schemas/ChangeUserInfoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
                                 }
                             }
                         }
@@ -288,6 +298,178 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get all records of certain month and year",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetAllRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get all records operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetAllResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Records"],
+                "summary": "Publish new record about drinking water",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NewRecord"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/today": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get all records of today",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get all today records operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetTodayResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/:recordId": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get all records of today",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record of the another day you wanto to receive info of",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get records operation of another day",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetAnotherDayResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
                                 }
                             }
                         }
@@ -360,7 +542,16 @@
                     "message": {
                         "type": "string",
                         "description": "error message",
-                        "example": "Missing fields / 'email' is required / 'password' is required / "
+                        "example": "Missing fields"
+                    }
+                }
+            },
+            "NotFoundError": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Not found"
                     }
                 }
             },
@@ -512,6 +703,153 @@
                     }
 
                 }
+            },
+            "ChangeUserInfoResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "User info was edited with success"
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                } 
+            },
+            "RecordsGetAllRequest": {
+                "type": "object",
+                "properties": {
+                    "month": {
+                        "type": "string",
+                        "description": "Enter month you want to get info by it",
+                        "example": "December"
+                    }
+                }
+            },
+            "RecordsGetAllResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "description": "Array of the objects of single day of the choosen month"
+                },
+                "example": [
+                    {
+                        "day": 9,
+                        "overall": 300,
+                        "servings": 1
+                    },
+                    {
+                        "day": 10,
+                        "overall": 250,
+                        "servings": 1
+                    },
+                    {
+                        "day": 19,
+                        "overall": 700,
+                        "servings": 2
+                    }
+                ]
+            },
+            "RecordsGetTodayRequest": {
+                "type": "object",
+                "properties": {
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of the current day of month",
+                        "example": 24
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of current month",
+                        "example": "August"
+                    }
+                }
+            },
+            "RecordsGetTodayResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string",
+                            "example": "jhdef8y5338b7cty83c897"
+                        },
+                        "dosage": {
+                            "type": "integer",
+                            "example": 1000
+                        },
+                        "time": {
+                            "type": "string",
+                            "example": "10:00"
+                        },
+                        "day": {
+                            "type": "integer",
+                            "example": 12
+                        },
+                        "month": {
+                            "type": "string",
+                            "example": "November"
+                        }
+                    }
+                },
+                "example": [
+                    {
+                        "_id": "654e2ea72de1793f78f30405",
+                        "dosage": 350,
+                        "time": "8:00",
+                        "day": 19,
+                        "month": "November"
+                    },
+                    {
+                        "_id": "654e2eb02de1793f78f30407",
+                        "dosage": 350,
+                        "time": "10:00",
+                        "day": 19,
+                        "month": "November"
+                    }
+                ]
+            },
+            "RecordsGetAnotherDayResponse": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "jhdef8y5338b7cty83c897"
+                    },
+                    "dosage": {
+                        "type": "integer",
+                        "example": 1000
+                    },
+                    "time": {
+                        "type": "string",
+                        "example": "10:00"
+                    }
+                }
+            },
+            "NewRecord": {
+
             }
         },
         "securitySchemes": {
