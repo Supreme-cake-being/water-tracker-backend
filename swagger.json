@@ -1,0 +1,525 @@
+{
+    "swagger": "5.0.0",
+    "openapi": "3.1.0",
+    "info": {
+        "version": "1.0",
+        "title": "Water Tracker documentation",
+        "description": "Documentation to API of Dream Team Water Track Server, thus group-4"
+    },
+    "consumes": ["application/json", "multipart/form-data"],
+    "produces": ["application/json"],
+    "servers": [{"url": "http://localhost:3005"}],
+    "tags": [
+        {
+            "name": "Authorization",
+            "description": "Endpoints for user authorization and authentication"
+        },
+        {
+            "name": "Water",
+            "description": "Endpoints for manipulation with water info"
+        }
+    ],
+    "paths": {
+        "/api/users/signup": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "User registration",
+                "requestBody": {
+                    "description": "Registration's object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/RegistrationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Email is already in use",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/RegistrationEmailInUseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/login": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "User login into webapp",
+                "requestBody": {
+                    "description": "Registration's object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+                  
+            }
+        },
+        "/api/users/current": {
+            "get": {
+                "tags": ["Authorization"],
+                "summary": "Get current user logged",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/CurrentUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/logout": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "Logout current user",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "204": {
+                        "description": "Successful logout operation",
+                        "content": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/avatars": {
+            "patch": {
+                "tags": ["Authorization"],
+                "summary": "Change user profile picture",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "This must be request type: 'multipart/form-data' with one image of any extention by name 'avatar'",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "encoding": {
+                                "avatar": {
+                                    "contentType": ["image/*"]
+                                }
+                            },
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadAvatarRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful upload image operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChnageAvatarResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UploadAvatarErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/info": {
+            "get": {
+               "tags": ["Authorization"],
+                "summary": "Get user profile information",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful get info operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegistrationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/": {
+            "put": {
+               "tags": ["Authorization"],
+                "summary": "Change user information",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Chnage info object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeUserInfoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get info operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegistrationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RegistrationRequest": {
+                "type": "object",
+                "requiered": ["email", "password"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "User's email",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "User's password",
+                        "example": "qwerty123"
+                    }
+                }
+            },
+            "RegistrationResponse": {
+                "type": "object",
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                }
+            },
+            "RegistrationEmailInUseResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "error message",
+                        "example": "Email is already in use"
+                    }
+                }
+            },
+            "BadRequestBodyResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "error message",
+                        "example": "Missing fields / 'email' is required / 'password' is required / "
+                    }
+                }
+            },
+            "LoginResponse": {
+                "type": "object",
+                "requiered": ["email", "password"],
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "Unoque JsonWebToken",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTBkNzU1OGY4NzQ0Y2E3ZjAzMDc5NSIsImlhdCI6MTY5OTgwMDIxOSwiZXhwIjoxNzAwNDA1MDE5fQ.O4qfwxi3OMwQDOlz5bH1J6dQOs_B9fOqjWSF5KLW9I0"
+                    }
+                }
+            },
+            "UnauthorizedResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "This message will indicate you that both 'email' or 'password' are wrong , as well as one of them",
+                        "example": "Email or password is wrong"
+                    }
+                }
+            },
+            "UnauthorizedWithoutTokenResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "Missing access token",
+                        "example": "Not authorized"
+                    }
+                }
+            },
+            "CurrentUserResponse": {
+                "type": "object",
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                }
+            },
+            "UploadAvatarRequest": {
+                "type": "object",
+                "properties": {
+                    "avatar": {
+                        "type": "string",
+                        "description": "Requiered name of image propertie as form-data request type",
+                        "exemple": "image_1.png"
+                    }
+                }
+            },
+            "ChnageAvatarResponse": {
+                "type": "object",
+                "properties": {
+                    "avatarURL": {
+                        "type": "string",
+                        "description": "Actual URL link to receive iploaded image",
+                        "example": "http://cloudinary.com/user/avatars/some_image_picture_with_some_params"
+                    }
+                }
+            },
+            "UploadAvatarErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Cannot destructure property 'path' of 'req.file' as it is undefined."
+                    }
+                }
+            },
+            "ChangeUserInfoRequest": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "TYPE is required properties of request body. Only this two values are valid: 'withPassword' & 'withoutPassword'. If you choose 'withPassword' - you must send also 'oldPassword' and 'newPassword' params with respective values. If you choose 'withoutPassword' - you should send request body without this two parametrs 'oldPassword' and 'newPassword'.",
+                        "example": "withPassword"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "Dream Team User"
+                    },
+                    "email": {
+                        "type": "email",
+                        "format": "email"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "description": "Only this two values are valid: 'male' | 'female'",
+                        "example": "female"
+                    },
+                    "oldPassword": {
+                        "type": "string",
+                        "description": "Current user's password that he must enter",
+                        "example": "1234567!"
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "description": "New password with witch user want to replace an old",
+                        "example": "!1234567"
+                    }
+
+                }
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}
