@@ -1,4 +1,5 @@
 import { ctrlWrapper } from '../decorators/index.js';
+import HttpError from '../helpers/HttpError.js';
 import Record from '../models/Record.js';
 
 const getAll = async (req, res, next) => {
