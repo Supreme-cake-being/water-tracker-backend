@@ -1,861 +1,1135 @@
 {
-  "swagger": "5.0.0",
-  "openapi": "3.1.0",
-  "info": {
-    "version": "1.0",
-    "title": "Water Tracker documentation",
-    "description": "Documentation to API of Dream Team Water Track Server, thus group-4"
-  },
-  "consumes": ["application/json", "multipart/form-data"],
-  "produces": ["application/json"],
-  "servers": [{ "url": "http://localhost:3005" }],
-  "tags": [
-    {
-      "name": "Authorization",
-      "description": "Endpoints for user authorization and authentication"
+    "swagger": "5.0.0",
+    "openapi": "3.1.0",
+    "info": {
+        "version": "1.0",
+        "title": "Water Tracker documentation",
+        "description": "Documentation to API of Dream Team Water Track Server, thus group-4"
     },
-    {
-      "name": "Records",
-      "description": "Endpoints for manipulation with water info records"
+    "consumes": ["application/json", "multipart/form-data"],
+    "produces": ["application/json"],
+    "servers": [{"url": "http://localhost:3005"}],
+    "tags": [
+        {
+            "name": "Authorization",
+            "description": "Endpoints for user authorization and authentication"
+        },
+        {
+            "name": "Records",
+            "description": "Endpoints for manipulation with water info records"
+        }
+    ],
+    "paths": {
+        "/api/users/signup": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "User registration",
+                "requestBody": {
+                    "description": "Registration's object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/RegistrationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Email is already in use",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/RegistrationEmailInUseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/login": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "User login into webapp",
+                "requestBody": {
+                    "description": "Registration's object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden request because email is not already verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+                  
+            }
+        },
+        "/api/users/current": {
+            "get": {
+                "tags": ["Authorization"],
+                "summary": "Get current user logged",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                "$ref": "#/components/schemas/CurrentUserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/logout": {
+            "post": {
+                "tags": ["Authorization"],
+                "summary": "Logout current user",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "204": {
+                        "description": "Successful logout operation",
+                        "content": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/avatars": {
+            "patch": {
+                "tags": ["Authorization"],
+                "summary": "Change user profile picture",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "This must be request type: 'multipart/form-data' with one image of any extention by name 'avatar'",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "encoding": {
+                                "avatar": {
+                                    "contentType": ["image/png"]
+                                }
+                            },
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadAvatarRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful upload image operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChnageAvatarResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UploadAvatarErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/info": {
+            "get": {
+               "tags": ["Authorization"],
+                "summary": "Get user profile information",
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful get info operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegistrationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/": {
+            "put": {
+               "tags": ["Authorization"],
+                "summary": "Change user information",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Chnage info object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeUserInfoRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get info operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChangeUserInfoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get all records of certain month and year",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetAllRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get all records operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetAllResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Records"],
+                "summary": "Publish new record about drinking water",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/NewRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful record operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NewRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/today": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get all records of today",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get all today records operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetTodayResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/records/:recordId": {
+            "get": {
+                "tags": ["Records"],
+                "summary": "Get single specific record by own ID",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record of the another day you want to receive info of",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get records operation of another day",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordsGetAnotherDayResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Records"],
+                "summary": "Delete a certain record",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record you want to delete",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful record delete operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordDeleteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Records"],
+                "summary": "Edit an info about specific record finded by ID",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record you want to update info of it",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful update record operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RegistrationRequest": {
+                "type": "object",
+                "requiered": ["email", "password"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "User's email",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "description": "User's password",
+                        "example": "qwerty123"
+                    }
+                }
+            },
+            "RegistrationResponse": {
+                "type": "object",
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                }
+            },
+            "RegistrationEmailInUseResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "error message",
+                        "example": "Email is already in use"
+                    }
+                }
+            },
+            "BadRequestBodyResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "error message",
+                        "example": "Missing fields"
+                    }
+                }
+            },
+            "NotFoundError": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Not found"
+                    }
+                }
+            },
+            "LoginResponse": {
+                "type": "object",
+                "requiered": ["email", "password"],
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "Unoque JsonWebToken",
+                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTBkNzU1OGY4NzQ0Y2E3ZjAzMDc5NSIsImlhdCI6MTY5OTgwMDIxOSwiZXhwIjoxNzAwNDA1MDE5fQ.O4qfwxi3OMwQDOlz5bH1J6dQOs_B9fOqjWSF5KLW9I0"
+                    }
+                }
+            },
+            "UnauthorizedResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "This message will indicate you that both 'email' or 'password' are wrong , as well as one of them",
+                        "example": "Email or password is wrong"
+                    }
+                }
+            },
+            "ForbiddenResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "This request is forbidden bacause email address isn't verified",
+                        "example": "Forbidden request due to not verified email"
+                    }
+                }
+            },
+            "UnauthorizedWithoutTokenResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "Missing access token",
+                        "example": "Not authorized"
+                    }
+                }
+            },
+            "CurrentUserResponse": {
+                "type": "object",
+                "properties": {
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                }
+            },
+            "UploadAvatarRequest": {
+                "type": "object",
+                "properties": {
+                    "avatar": {
+                        "type": "string",
+                        "description": "Requiered name of image propertie as form-data request type",
+                        "format": "binary"
+                    }
+                }
+            },
+            "ChnageAvatarResponse": {
+                "type": "object",
+                "properties": {
+                    "avatarURL": {
+                        "type": "string",
+                        "description": "Actual URL link to receive iploaded image",
+                        "example": "http://cloudinary.com/user/avatars/some_image_picture_with_some_params"
+                    }
+                }
+            },
+            "UploadAvatarErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Cannot destructure property 'path' of 'req.file' as it is undefined."
+                    }
+                }
+            },
+            "ChangeUserInfoRequest": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "TYPE is required properties of request body. Only this two values are valid: 'withPassword' & 'withoutPassword'. If you choose 'withPassword' - you must send also 'oldPassword' and 'newPassword' params with respective values. If you choose 'withoutPassword' - you should send request body without this two parametrs 'oldPassword' and 'newPassword'.",
+                        "example": "withPassword"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "Dream Team User"
+                    },
+                    "email": {
+                        "type": "email",
+                        "format": "email"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "description": "Only this two values are valid: 'male' | 'female'",
+                        "example": "female"
+                    },
+                    "oldPassword": {
+                        "type": "string",
+                        "description": "Current user's password that he must enter",
+                        "example": "1234567!"
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "description": "New password with witch user want to replace an old",
+                        "example": "!1234567"
+                    }
+
+                }
+            },
+            "ChangeUserInfoResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "User info was edited with success"
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "By defaul username will his email address",
+                                "format": "email"
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "User's email",
+                                "format": "email"
+                            },
+                            "avatarURL": {
+                                "type": "string",
+                                "description": "By defaul it will be 'null'",
+                                "example": "null"
+                            },
+                            "gender": {
+                                "type": "string",
+                                "description": "User's gender identity. By default it will be 'male'",
+                                "example": "male"
+                            }
+                        }
+                    }
+                } 
+            },
+            "RecordsGetAllRequest": {
+                "type": "object",
+                "properties": {
+                    "month": {
+                        "type": "string",
+                        "description": "Enter month you want to get info by it",
+                        "example": "December"
+                    }
+                }
+            },
+            "RecordsGetAllResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "description": "Array of the objects of single day of the choosen month"
+                },
+                "example": [
+                    {
+                        "day": 9,
+                        "overall": 300,
+                        "servings": 1
+                    },
+                    {
+                        "day": 10,
+                        "overall": 250,
+                        "servings": 1
+                    },
+                    {
+                        "day": 19,
+                        "overall": 700,
+                        "servings": 2
+                    }
+                ]
+            },
+            "RecordsGetTodayRequest": {
+                "type": "object",
+                "properties": {
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of the current day of month",
+                        "example": 24
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of current month",
+                        "example": "August"
+                    }
+                }
+            },
+            "RecordsGetTodayResponse": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "_id": {
+                            "type": "string",
+                            "example": "jhdef8y5338b7cty83c897"
+                        },
+                        "dosage": {
+                            "type": "integer",
+                            "example": 1000
+                        },
+                        "time": {
+                            "type": "string",
+                            "example": "10:00"
+                        },
+                        "day": {
+                            "type": "integer",
+                            "example": 12
+                        },
+                        "month": {
+                            "type": "string",
+                            "example": "November"
+                        }
+                    }
+                },
+                "example": [
+                    {
+                        "_id": "654e2ea72de1793f78f30405",
+                        "dosage": 350,
+                        "time": "8:00",
+                        "day": 19,
+                        "month": "November"
+                    },
+                    {
+                        "_id": "654e2eb02de1793f78f30407",
+                        "dosage": 350,
+                        "time": "10:00",
+                        "day": 19,
+                        "month": "November"
+                    }
+                ]
+            },
+            "RecordsGetAnotherDayResponse": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "jhdef8y5338b7cty83c897"
+                    },
+                    "dosage": {
+                        "type": "integer",
+                        "example": 1000
+                    },
+                    "time": {
+                        "type": "string",
+                        "example": "10:00"
+                    }
+                }
+            },
+            "NewRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "description": "Quantity of drinking water",
+                        "example": 500
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time when user drink water",
+                        "example": "08:00"
+                    },
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of day when user drink water (minimum 1, maximum 31)",
+                        "example": 13
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of month when user drink water. Only those will valid 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',",
+                        "example": "December"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Number of current year when user drink water",
+                        "example": 2023
+                    }
+                }
+            },
+            "NewRecordResponse": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "description": "Quantity of drinking water",
+                        "example": 500
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time when user drink water",
+                        "example": "08:00"
+                    },
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of day when user drink water (minimum 1, maximum 31)",
+                        "example": 13
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of month when user drink water. Only those will valid 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',",
+                        "example": "December"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Number of current year when user drink water",
+                        "example": 2023
+                    },
+                    "owner": {
+                        "type": "object",
+                        "properties": {
+                            "avatar": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {
+                                        "type": "string",
+                                        "example": "http://some_site.com/some_link/off_some_picture"
+                                    },
+                                    "publickId": {
+                                        "type": "string",
+                                        "example": "fdfvdfvdtrrt55eeg5ge5ge5eg5"
+                                    }
+                                }
+                            },
+                            "id": {
+                                "type": "string",
+                                "example": "dfggdfdgt4g54g534g5"
+                            }
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "description": "Time when tis record was created",
+                        "example": "2023-11-12T13:47:01.719Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "description": "Time of the last update of current record in DB",
+                        "example": "2023-11-13T09:08:20.547Z"
+                    }
+                }
+            },
+            "RecordDeleteResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Record deleted"
+                    }
+                }
+            },
+            "UpdateRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "decription": "Number of quantity of the drinking water",
+                        "example": 123
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time you want to indicate about drink water",
+                        "example": "12:30"
+                    }
+                }
+            },
+            "UpdateRecordResponse": {
+                "type": "object",
+                "example": {
+                    "_id": "654e2b4b8b61cd9105d3f023",
+                    "dosage": 500,
+                    "time": "10:00",
+                    "day": 10,
+                    "month": "November"
+                }
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
     }
-  ],
-  "paths": {
-    "/api/users/signup": {
-      "post": {
-        "tags": ["Authorization"],
-        "summary": "User registration",
-        "requestBody": {
-          "description": "Registration's object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request body response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestBodyResponse"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Email is already in use",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationEmailInUseResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/login": {
-      "post": {
-        "tags": ["Authorization"],
-        "summary": "User login into webapp",
-        "requestBody": {
-          "description": "Registration's object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request body response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestBodyResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/current": {
-      "get": {
-        "tags": ["Authorization"],
-        "summary": "Get current user logged",
-        "security": [{ "Bearer": [] }],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CurrentUserResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/logout": {
-      "post": {
-        "tags": ["Authorization"],
-        "summary": "Logout current user",
-        "security": [{ "Bearer": [] }],
-        "responses": {
-          "204": {
-            "description": "Successful logout operation",
-            "content": {}
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/avatars": {
-      "patch": {
-        "tags": ["Authorization"],
-        "summary": "Change user profile picture",
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "This must be request type: 'multipart/form-data' with one image of any extention by name 'avatar'",
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "encoding": {
-                "avatar": {
-                  "contentType": ["image/*"]
-                }
-              },
-              "schema": {
-                "$ref": "#/components/schemas/UploadAvatarRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful upload image operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChnageAvatarResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadAvatarErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/info": {
-      "get": {
-        "tags": ["Authorization"],
-        "summary": "Get user profile information",
-        "security": [{ "Bearer": [] }],
-        "responses": {
-          "200": {
-            "description": "Successful get info operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users/": {
-      "put": {
-        "tags": ["Authorization"],
-        "summary": "Change user information",
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Chnage info object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangeUserInfoRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful get info operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ChangeUserInfoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request body response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestBodyResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/records/": {
-      "get": {
-        "tags": ["Records"],
-        "summary": "Get all records of certain month and year",
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Request object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RecordsGetAllRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful get all records operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RecordsGetAllResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Records"],
-        "summary": "Publish new record about drinking water",
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Request object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewRecord"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/records/today": {
-      "get": {
-        "tags": ["Records"],
-        "summary": "Get all records of today",
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Request object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RecordsGetTodayRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful get all today records operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RecordsGetTodayResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/records/:recordId": {
-      "get": {
-        "tags": ["Records"],
-        "summary": "Get all records of today",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "recordId",
-            "description": "It's ID of the record of the another day you wanto to receive info of",
-            "required": true
-          }
-        ],
-        "security": [{ "Bearer": [] }],
-        "requestBody": {
-          "description": "Request object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RecordsGetTodayRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful get records operation of another day",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RecordsGetAnotherDayResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "RegistrationRequest": {
-        "type": "object",
-        "requiered": ["email", "password"],
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "format": "email"
-          },
-          "password": {
-            "type": "string",
-            "description": "User's password",
-            "example": "qwerty123"
-          }
-        }
-      },
-      "RegistrationResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "description": "By defaul username will his email address",
-                "format": "email"
-              },
-              "email": {
-                "type": "string",
-                "description": "User's email",
-                "format": "email"
-              },
-              "avatarURL": {
-                "type": "string",
-                "description": "By defaul it will be 'null'",
-                "example": "null"
-              },
-              "gender": {
-                "type": "string",
-                "description": "User's gender identity. By default it will be 'male'",
-                "example": "male"
-              }
-            }
-          }
-        }
-      },
-      "RegistrationEmailInUseResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "error message",
-            "example": "Email is already in use"
-          }
-        }
-      },
-      "BadRequestBodyResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "error message",
-            "example": "Missing fields"
-          }
-        }
-      },
-      "NotFoundError": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Not found"
-          }
-        }
-      },
-      "LoginResponse": {
-        "type": "object",
-        "requiered": ["email", "password"],
-        "properties": {
-          "user": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "description": "By defaul username will his email address",
-                "format": "email"
-              },
-              "email": {
-                "type": "string",
-                "description": "User's email",
-                "format": "email"
-              },
-              "avatarURL": {
-                "type": "string",
-                "description": "By defaul it will be 'null'",
-                "example": "null"
-              },
-              "gender": {
-                "type": "string",
-                "description": "User's gender identity. By default it will be 'male'",
-                "example": "male"
-              }
-            }
-          },
-          "token": {
-            "type": "string",
-            "description": "Unoque JsonWebToken",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTBkNzU1OGY4NzQ0Y2E3ZjAzMDc5NSIsImlhdCI6MTY5OTgwMDIxOSwiZXhwIjoxNzAwNDA1MDE5fQ.O4qfwxi3OMwQDOlz5bH1J6dQOs_B9fOqjWSF5KLW9I0"
-          }
-        }
-      },
-      "UnauthorizedResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "This message will indicate you that both 'email' or 'password' are wrong , as well as one of them",
-            "example": "Email or password is wrong"
-          }
-        }
-      },
-      "UnauthorizedWithoutTokenResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Missing access token",
-            "example": "Not authorized"
-          }
-        }
-      },
-      "CurrentUserResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "description": "By defaul username will his email address",
-                "format": "email"
-              },
-              "email": {
-                "type": "string",
-                "description": "User's email",
-                "format": "email"
-              },
-              "avatarURL": {
-                "type": "string",
-                "description": "By defaul it will be 'null'",
-                "example": "null"
-              },
-              "gender": {
-                "type": "string",
-                "description": "User's gender identity. By default it will be 'male'",
-                "example": "male"
-              }
-            }
-          }
-        }
-      },
-      "UploadAvatarRequest": {
-        "type": "object",
-        "properties": {
-          "avatar": {
-            "type": "string",
-            "description": "Requiered name of image propertie as form-data request type",
-            "exemple": "image_1.png"
-          }
-        }
-      },
-      "ChnageAvatarResponse": {
-        "type": "object",
-        "properties": {
-          "avatarURL": {
-            "type": "string",
-            "description": "Actual URL link to receive iploaded image",
-            "example": "http://cloudinary.com/user/avatars/some_image_picture_with_some_params"
-          }
-        }
-      },
-      "UploadAvatarErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Cannot destructure property 'path' of 'req.file' as it is undefined."
-          }
-        }
-      },
-      "ChangeUserInfoRequest": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "TYPE is required properties of request body. Only this two values are valid: 'withPassword' & 'withoutPassword'. If you choose 'withPassword' - you must send also 'oldPassword' and 'newPassword' params with respective values. If you choose 'withoutPassword' - you should send request body without this two parametrs 'oldPassword' and 'newPassword'.",
-            "example": "withPassword"
-          },
-          "username": {
-            "type": "string",
-            "example": "Dream Team User"
-          },
-          "email": {
-            "type": "email",
-            "format": "email"
-          },
-          "gender": {
-            "type": "string",
-            "description": "Only this two values are valid: 'male' | 'female'",
-            "example": "female"
-          },
-          "oldPassword": {
-            "type": "string",
-            "description": "Current user's password that he must enter",
-            "example": "1234567!"
-          },
-          "newPassword": {
-            "type": "string",
-            "description": "New password with witch user want to replace an old",
-            "example": "!1234567"
-          }
-        }
-      },
-      "ChangeUserInfoResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "User info was edited with success"
-          },
-          "user": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string",
-                "description": "By defaul username will his email address",
-                "format": "email"
-              },
-              "email": {
-                "type": "string",
-                "description": "User's email",
-                "format": "email"
-              },
-              "avatarURL": {
-                "type": "string",
-                "description": "By defaul it will be 'null'",
-                "example": "null"
-              },
-              "gender": {
-                "type": "string",
-                "description": "User's gender identity. By default it will be 'male'",
-                "example": "male"
-              }
-            }
-          }
-        }
-      },
-      "RecordsGetAllRequest": {
-        "type": "object",
-        "properties": {
-          "month": {
-            "type": "string",
-            "description": "Enter month you want to get info by it",
-            "example": "December"
-          }
-        }
-      },
-      "RecordsGetAllResponse": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "description": "Array of the objects of single day of the choosen month"
-        },
-        "example": [
-          {
-            "day": 9,
-            "overall": 300,
-            "servings": 1
-          },
-          {
-            "day": 10,
-            "overall": 250,
-            "servings": 1
-          },
-          {
-            "day": 19,
-            "overall": 700,
-            "servings": 2
-          }
-        ]
-      },
-      "RecordsGetTodayRequest": {
-        "type": "object",
-        "properties": {
-          "day": {
-            "type": "integer",
-            "description": "Number of the current day of month",
-            "example": 24
-          },
-          "month": {
-            "type": "string",
-            "description": "Name of current month",
-            "example": "August"
-          }
-        }
-      },
-      "RecordsGetTodayResponse": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "example": "jhdef8y5338b7cty83c897"
-            },
-            "dosage": {
-              "type": "integer",
-              "example": 1000
-            },
-            "time": {
-              "type": "string",
-              "example": "10:00"
-            },
-            "day": {
-              "type": "integer",
-              "example": 12
-            },
-            "month": {
-              "type": "string",
-              "example": "November"
-            }
-          }
-        },
-        "example": [
-          {
-            "_id": "654e2ea72de1793f78f30405",
-            "dosage": 350,
-            "time": "8:00",
-            "day": 19,
-            "month": "November"
-          },
-          {
-            "_id": "654e2eb02de1793f78f30407",
-            "dosage": 350,
-            "time": "10:00",
-            "day": 19,
-            "month": "November"
-          }
-        ]
-      },
-      "RecordsGetAnotherDayResponse": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "example": "jhdef8y5338b7cty83c897"
-          },
-          "dosage": {
-            "type": "integer",
-            "example": 1000
-          },
-          "time": {
-            "type": "string",
-            "example": "10:00"
-          }
-        }
-      },
-      "NewRecord": {}
-    },
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    }
-  }
 }
