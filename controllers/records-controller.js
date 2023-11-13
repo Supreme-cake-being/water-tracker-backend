@@ -4,7 +4,7 @@ import Record from '../models/Record.js';
 
 const getAll = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const { month, year } = req.body;
+  const { month, year } = req.query;
 
   const records = await Record.find({ owner, month, year });
 
@@ -37,7 +37,7 @@ const getAll = async (req, res, next) => {
 
 const getAllToday = async (req, res, next) => {
   const { _id: owner } = req.user;
-  const { day, month, year } = req.body;
+  const { day, month, year } = req.query;
 
   const records = await Record.find({ owner, day, month, year });
   const result = records
