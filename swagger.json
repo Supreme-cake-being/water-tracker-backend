@@ -114,6 +114,16 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden request because email is not already verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
                     }
                 }
                   
@@ -727,6 +737,16 @@
                         "type": "string",
                         "description": "This message will indicate you that both 'email' or 'password' are wrong , as well as one of them",
                         "example": "Email or password is wrong"
+                    }
+                }
+            },
+            "ForbiddenResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "This request is forbidden bacause email address isn't verified",
+                        "example": "Forbidden request due to not verified email"
                     }
                 }
             },
