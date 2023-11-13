@@ -2,13 +2,13 @@
     "swagger": "5.0.0",
     "openapi": "3.1.0",
     "info": {
-        "version": "1.0",
+        "version": "1.1.0",
         "title": "Water Tracker documentation",
         "description": "Documentation to API of Dream Team Water Track Server, thus group-4"
     },
     "consumes": ["application/json", "multipart/form-data"],
     "produces": ["application/json"],
-    "servers": [{"url": "http://localhost:3005"}],
+    "servers": [{"url": "https://water-tracker.onrender.com"}],
     "tags": [
         {
             "name": "Authorization",
@@ -265,7 +265,7 @@
                 }
             }
         },
-        "/api/users/": {
+        "/api/users": {
             "put": {
                "tags": ["Authorization"],
                 "summary": "Change user information",
@@ -315,22 +315,25 @@
                 }
             }
         },
-        "/api/records/": {
+        "/api/records": {
             "get": {
                 "tags": ["Records"],
                 "summary": "Get all records of certain month and year",
-                "security": [{ "Bearer": [] }],
-                "requestBody": {
-                    "description": "Request object",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RecordsGetAllRequest"
-                            }
-                        }
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "month",
+                        "description": "It's month you want to receive info of",
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "year",
+                        "description": "It's year you want to receive info of",
+                        "required": true
                     }
-                },
+                ],
+                "security": [{ "Bearer": [] }],
                 "responses": {
                     "200": {
                         "description": "Successful get all records operation",
@@ -417,18 +420,27 @@
             "get": {
                 "tags": ["Records"],
                 "summary": "Get all records of today",
-                "security": [{ "Bearer": [] }],
-                "requestBody": {
-                    "description": "Request object",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
-                            }
-                        }
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "day",
+                        "description": "The day of month you want to receive info of",
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "month",
+                        "description": "It's month you want to receive info of",
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "year",
+                        "description": "It's month you want to receive info of",
+                        "required": true
                     }
-                },
+                ],
+                "security": [{ "Bearer": [] }],
                 "responses": {
                     "200": {
                         "description": "Successful get all today records operation",
@@ -474,17 +486,6 @@
                     "required": true
                 }],
                 "security": [{ "Bearer": [] }],
-                "requestBody": {
-                    "description": "Request object",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RecordsGetTodayRequest"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "Successful get records operation of another day",
@@ -887,16 +888,6 @@
                     }
                 } 
             },
-            "RecordsGetAllRequest": {
-                "type": "object",
-                "properties": {
-                    "month": {
-                        "type": "string",
-                        "description": "Enter month you want to get info by it",
-                        "example": "December"
-                    }
-                }
-            },
             "RecordsGetAllResponse": {
                 "type": "array",
                 "items": {
@@ -920,21 +911,6 @@
                         "servings": 2
                     }
                 ]
-            },
-            "RecordsGetTodayRequest": {
-                "type": "object",
-                "properties": {
-                    "day": {
-                        "type": "integer",
-                        "description": "Number of the current day of month",
-                        "example": 24
-                    },
-                    "month": {
-                        "type": "string",
-                        "description": "Name of current month",
-                        "example": "August"
-                    }
-                }
             },
             "RecordsGetTodayResponse": {
                 "type": "array",
