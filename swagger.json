@@ -574,7 +574,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful get records operation of another day",
+                        "description": "Successful update record operation",
                         "content": {
                             "application/json": {
                                 "schema": {
