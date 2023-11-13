@@ -364,7 +364,39 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/NewRecord"
+                                "$ref": "#/components/schemas/NewRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful record operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NewRecordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
                             }
                         }
                     }
@@ -424,11 +456,11 @@
         "/api/records/:recordId": {
             "get": {
                 "tags": ["Records"],
-                "summary": "Get all records of today",
+                "summary": "Get single specific record by own ID",
                 "parameters": [{
                     "in": "path",
                     "name": "recordId",
-                    "description": "It's ID of the record of the another day you wanto to receive info of",
+                    "description": "It's ID of the record of the another day you want to receive info of",
                     "required": true
                 }],
                 "security": [{ "Bearer": [] }],
@@ -450,6 +482,103 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/RecordsGetAnotherDayResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Records"],
+                "summary": "Delete a certain record",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record you want to delete",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful record delete operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecordDeleteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedWithoutTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Records"],
+                "summary": "Edit an info about specific record finded by ID",
+                "parameters": [{
+                    "in": "path",
+                    "name": "recordId",
+                    "description": "It's ID of the record you want to update info of it",
+                    "required": true
+                }],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Request object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful get records operation of another day",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateRecordResponse"
                                 }
                             }
                         }
@@ -848,8 +977,131 @@
                     }
                 }
             },
-            "NewRecord": {
-
+            "NewRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "description": "Quantity of drinking water",
+                        "example": 500
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time when user drink water",
+                        "example": "08:00"
+                    },
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of day when user drink water (minimum 1, maximum 31)",
+                        "example": 13
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of month when user drink water. Only those will valid 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',",
+                        "example": "December"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Number of current year when user drink water",
+                        "example": 2023
+                    }
+                }
+            },
+            "NewRecordResponse": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "description": "Quantity of drinking water",
+                        "example": 500
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time when user drink water",
+                        "example": "08:00"
+                    },
+                    "day": {
+                        "type": "integer",
+                        "description": "Number of day when user drink water (minimum 1, maximum 31)",
+                        "example": 13
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "Name of month when user drink water. Only those will valid 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',",
+                        "example": "December"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Number of current year when user drink water",
+                        "example": 2023
+                    },
+                    "owner": {
+                        "type": "object",
+                        "properties": {
+                            "avatar": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {
+                                        "type": "string",
+                                        "example": "http://some_site.com/some_link/off_some_picture"
+                                    },
+                                    "publickId": {
+                                        "type": "string",
+                                        "example": "fdfvdfvdtrrt55eeg5ge5ge5eg5"
+                                    }
+                                }
+                            },
+                            "id": {
+                                "type": "string",
+                                "example": "dfggdfdgt4g54g534g5"
+                            }
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "description": "Time when tis record was created",
+                        "example": "2023-11-12T13:47:01.719Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "description": "Time of the last update of current record in DB",
+                        "example": "2023-11-13T09:08:20.547Z"
+                    }
+                }
+            },
+            "RecordDeleteResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Record deleted"
+                    }
+                }
+            },
+            "UpdateRecordRequest": {
+                "type": "object",
+                "properties": {
+                    "dosage": {
+                        "type": "integer",
+                        "decription": "Number of quantity of the drinking water",
+                        "example": 123
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time you want to indicate about drink water",
+                        "example": "12:30"
+                    }
+                }
+            },
+            "UpdateRecordResponse": {
+                "type": "object",
+                "example": {
+                    "_id": "654e2b4b8b61cd9105d3f023",
+                    "dosage": 500,
+                    "time": "10:00",
+                    "day": 10,
+                    "month": "November"
+                }
             }
         },
         "securitySchemes": {
