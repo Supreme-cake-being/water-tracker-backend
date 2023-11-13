@@ -183,7 +183,7 @@
                         "multipart/form-data": {
                             "encoding": {
                                 "avatar": {
-                                    "contentType": ["image/*"]
+                                    "contentType": ["image/png"]
                                 }
                             },
                             "schema": {
@@ -776,7 +776,7 @@
                     "avatar": {
                         "type": "string",
                         "description": "Requiered name of image propertie as form-data request type",
-                        "exemple": "image_1.png"
+                        "format": "binary"
                     }
                 }
             },
