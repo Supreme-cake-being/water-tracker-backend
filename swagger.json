@@ -994,7 +994,7 @@
                     "month": {
                         "type": "string",
                         "description": "Name of month when user drink water. Only those will valid 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',",
-                        "example": "December"
+                        "enum": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
                     },
                     "year": {
                         "type": "integer",
