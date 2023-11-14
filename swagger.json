@@ -271,7 +271,7 @@
                 "summary": "Change user information",
                 "security": [{ "Bearer": [] }],
                 "requestBody": {
-                    "description": "Chnage info object",
+                    "description": "Change info object",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -631,8 +631,8 @@
                     },
                     "password": {
                         "type": "string",
-                        "description": "User's password",
-                        "example": "qwerty123"
+                        "description": "User's password must have minimun 8 and maximum 64 symbols$ one of those must be a special symbol, thus '@$!%*?&'",
+                        "example": "qwerty12!"
                     }
                 }
             },
@@ -826,7 +826,7 @@
                     "type": {
                         "type": "string",
                         "description": "TYPE is required properties of request body. Only this two values are valid: 'withPassword' & 'withoutPassword'. If you choose 'withPassword' - you must send also 'oldPassword' and 'newPassword' params with respective values. If you choose 'withoutPassword' - you should send request body without this two parametrs 'oldPassword' and 'newPassword'.",
-                        "example": "withPassword"
+                        "enum": ["withPassword", "withoutPassword"]
                     },
                     "username": {
                         "type": "string",
@@ -839,7 +839,7 @@
                     "gender": {
                         "type": "string",
                         "description": "Only this two values are valid: 'male' | 'female'",
-                        "example": "female"
+                        "enum": ["male", "female"]
                     },
                     "oldPassword": {
                         "type": "string",
@@ -1030,38 +1030,6 @@
                         "type": "integer",
                         "description": "Number of current year when user drink water",
                         "example": 2023
-                    },
-                    "owner": {
-                        "type": "object",
-                        "properties": {
-                            "avatar": {
-                                "type": "object",
-                                "properties": {
-                                    "url": {
-                                        "type": "string",
-                                        "example": "http://some_site.com/some_link/off_some_picture"
-                                    },
-                                    "publickId": {
-                                        "type": "string",
-                                        "example": "fdfvdfvdtrrt55eeg5ge5ge5eg5"
-                                    }
-                                }
-                            },
-                            "id": {
-                                "type": "string",
-                                "example": "dfggdfdgt4g54g534g5"
-                            }
-                        }
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "description": "Time when tis record was created",
-                        "example": "2023-11-12T13:47:01.719Z"
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "description": "Time of the last update of current record in DB",
-                        "example": "2023-11-13T09:08:20.547Z"
                     }
                 }
             },
