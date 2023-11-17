@@ -69,6 +69,46 @@
                 }
             }
         },
+        "/api/users/verify": {
+            "post": {
+               "tags": ["Authorization"],
+                "summary": "Resend signup verification e-mail.",
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "E-mail with witch user has been registrated on service.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RestoreEmailRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RestoreEmailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request body response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestBodyResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/login": {
             "post": {
                 "tags": ["Authorization"],
@@ -1085,6 +1125,25 @@
                     "time": "10:00",
                     "day": 10,
                     "month": "November"
+                }
+            },
+            "RestoreEmailRequest": {
+                "type": "object", 
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "You need to insert the user's e-mail address with he was registrated",
+                        "format": "email"
+                    }
+                }
+            },
+            "RestoreEmailResponse": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Verification email sent"
+                    }
                 }
             }
         },
