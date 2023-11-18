@@ -142,6 +142,7 @@ const login = async (req, res) => {
       email,
       avatarURL: user.avatar.url,
       gender: user.gender,
+      dailyNorma: user.dailyNorma,
     },
     token,
   });
@@ -210,6 +211,7 @@ const userInfo = async (req, res) => {
       email: user.email,
       avatarURL: user.avatar.url,
       gender: user.gender,
+      dailyNorma: user.dailyNorma,
     },
   });
 };
@@ -242,6 +244,7 @@ const editInfo = async (req, res) => {
       email: updatedUser.email,
       avatarURL: updatedUser.avatar.url,
       gender: updatedUser.gender,
+      dailyNorma: updatedUser.dailyNorma,
     },
   });
 };
