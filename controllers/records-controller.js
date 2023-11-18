@@ -35,7 +35,7 @@ const getAll = async (req, res, next) => {
   res.json(result);
 };
 
-const getAllToday = async (req, res, next) => { 
+const getAllToday = async (req, res, next) => {
   const { _id: owner } = req.user;
   const { day, month, year } = req.query;
 
@@ -89,7 +89,7 @@ const deleteById = async (req, res, next) => {
     throw HttpError(404, 'Not found');
   }
 
-  res.json({ message: 'Record deleted' });
+  res.json({ id: result._id });
 };
 
 const updateById = async (req, res, next) => {
