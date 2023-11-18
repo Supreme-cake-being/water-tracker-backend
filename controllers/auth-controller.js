@@ -116,11 +116,11 @@ const login = async (req, res) => {
 
   if (!user) {
     throw HttpError(401, 'Email or password is wrong');
-    }
-    
-    if (!user.verify) {
-        throw HttpError(403, "Forbidden request due to not verified email")
-    }
+  }
+
+  if (!user.verify) {
+    throw HttpError(403, 'Forbidden request due to not verified email');
+  }
 
   if (!user.verify) {
     throw HttpError(401, 'Email not verified');
@@ -158,6 +158,7 @@ const currentUser = async (req, res) => {
       email,
       avatarURL: user.avatar.url,
       gender: user.gender,
+      dailyNorma: user.dailyNorma,
     },
   });
 };
