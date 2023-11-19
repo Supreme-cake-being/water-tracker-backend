@@ -47,4 +47,6 @@ authRouter.put(
   authCtrl.editInfo
 );
 
+authRouter.post('/restore', userEmailValidate, authCtrl.restorePassword);
+
 export default authRouter;
