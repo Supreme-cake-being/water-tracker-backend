@@ -261,10 +261,18 @@ const editInfo = async (req, res) => {
       email: updatedUser.email,
       avatarURL: updatedUser.avatar.url,
       gender: updatedUser.gender,
-      dailyNorma: updatedUser.dailyNorma,
     },
   });
 };
+
+const dailyNormaUpdate = async (req, res) => {
+  const { dailyNorma } = req.body;
+  const user = req.user;
+
+  const { dailyNorma: newDailyNorma } = await User.findByIdAndUpdate(user._id, { dailyNorma }, { new: true });
+
+  res.json({ dailyNorma: newDailyNorma });
+}
 
 const restorePassword = async (req, res) => {
   const { email } = req.body;
@@ -341,4 +349,5 @@ export const authCtrl = {
   editInfo: ctrlWrapper(editInfo),
   restorePassword: ctrlWrapper(restorePassword),
   deleteAccount: ctrlWrapper(deleteAccount),
+  dailyNormaUpdate: ctrlWrapper(dailyNormaUpdate),
 };

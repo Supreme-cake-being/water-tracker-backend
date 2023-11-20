@@ -2,6 +2,7 @@ import express from 'express';
 import { authCtrl } from '../../controllers/auth-controller.js';
 import { validateBody } from '../../decorators/index.js';
 import {
+  userDailyNormaSchema,
   userEditSchema,
   userEmailSchema,
   userLoginSchema,
@@ -19,6 +20,7 @@ const userLoginValidate = validateBody(userLoginSchema);
 const userEmailValidate = validateBody(userEmailSchema);
 const userPasswordValidate = validateBody(userPasswordSchema);
 const userEditValidate = validateBody(userEditSchema);
+const userDailyNormaValidate = validateBody(userDailyNormaSchema);
 
 authRouter.post('/signup', isEmptyBody, userSignupValidate, authCtrl.signup);
 
@@ -48,6 +50,8 @@ authRouter.put(
   userEditValidate,
   authCtrl.editInfo
 );
+
+authRouter.patch('/daily-norma', authenticate, userDailyNormaValidate, authCtrl.dailyNormaUpdate);
 
 authRouter.post('/restore', userEmailValidate, authCtrl.restorePassword);
 
