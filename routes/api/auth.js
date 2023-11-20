@@ -5,6 +5,7 @@ import {
   userEditSchema,
   userEmailSchema,
   userLoginSchema,
+  userPasswordSchema,
   userSignupSchema,
 } from '../../models/User.js';
 import authenticate from '../../middlewares/authenticate.js';
@@ -16,6 +17,7 @@ const authRouter = express.Router();
 const userSignupValidate = validateBody(userSignupSchema);
 const userLoginValidate = validateBody(userLoginSchema);
 const userEmailValidate = validateBody(userEmailSchema);
+const userPasswordValidate = validateBody(userPasswordSchema);
 const userEditValidate = validateBody(userEditSchema);
 
 authRouter.post('/signup', isEmptyBody, userSignupValidate, authCtrl.signup);
@@ -48,5 +50,7 @@ authRouter.put(
 );
 
 authRouter.post('/restore', userEmailValidate, authCtrl.restorePassword);
+
+authRouter.delete('/', authenticate, userPasswordValidate, authCtrl.deleteAccount);
 
 export default authRouter;

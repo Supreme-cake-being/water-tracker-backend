@@ -67,6 +67,10 @@ const userEmailSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
 });
 
+const userPasswordSchema = Joi.object({
+  password: Joi.string().pattern(passwordRegex).required(),
+});
+
 const userEditSchema = Joi.object({
   type: Joi.string().required().valid('withPassword', 'withoutPassword'),
   username: Joi.string().min(3).max(32).required(),
@@ -100,5 +104,6 @@ export {
   userSignupSchema,
   userLoginSchema,
   userEmailSchema,
+  userPasswordSchema,
   userEditSchema,
 };

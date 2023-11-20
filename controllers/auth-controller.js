@@ -315,6 +315,20 @@ const restorePassword = async (req, res) => {
   res.json({ message: 'Check e-mail address you`ve been indicated before' });
 }
 
+const deleteAccount = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+  const comparedPassword = await bcrypt.compare(password, user.password);
+
+  if (!comparedPassword) {
+    throw HttpError(401, 'Wrong password');
+  }
+
+  await User.findByIdAndDelete(user._id);
+
+  res.json({ message: 'Customer profile was deleted with success' });
+}
+
 export const authCtrl = {
   signup: ctrlWrapper(signup),
   verify: ctrlWrapper(verify),
@@ -326,4 +340,5 @@ export const authCtrl = {
   userInfo: ctrlWrapper(userInfo),
   editInfo: ctrlWrapper(editInfo),
   restorePassword: ctrlWrapper(restorePassword),
+  deleteAccount: ctrlWrapper(deleteAccount),
 };
