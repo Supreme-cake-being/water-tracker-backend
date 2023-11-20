@@ -73,7 +73,6 @@
             "post": {
                "tags": ["Authorization"],
                 "summary": "Resend signup verification e-mail.",
-                "security": [{ "Bearer": [] }],
                 "requestBody": {
                     "description": "E-mail with witch user has been registrated on service.",
                     "required": true,
