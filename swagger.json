@@ -777,7 +777,7 @@
                     },
                     "password": {
                         "type": "string",
-                        "description": "User's password must have minimun 8 and maximum 64 symbols$ one of those must be a special symbol, thus '@$!%*?&'",
+                        "description": "User's password must have minimun 8 and maximum 64 symbols one of those must be a special symbol, thus '@$!%*?&'",
                         "example": "qwerty12!"
                     }
                 }
