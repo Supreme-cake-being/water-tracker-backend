@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { nanoid } from 'nanoid';
+import { nanoid, customAlphabet } from 'nanoid';
 import { ctrlWrapper } from '../decorators/index.js';
 import HttpError from '../helpers/HttpError.js';
 import { User } from '../models/User.js';
@@ -45,11 +45,31 @@ const signup = async (req, res) => {
     to: newUser.email,
     subject: 'Email verification',
     html: `
-            <strong>To verify your accont, please
-                <a href='${BASE_URL}/api/users/verify/${verificationToken}'>
-                    click here
-                </a>
-            </strong>
+            <table style='background-color: #2F2F2F; font-size: 16px; margin: 0 auto; border: none'>
+              <thead style='padding: 15px 20px'>
+                <tr>
+                  <td style='color: #fff; text-align: center'>
+                    <h2>Welcome, dear customer!</h2>
+                    <p>The our team is glad to see you on this <strong>Water Track</strong> service.</p>
+                  </td>
+                </tr>
+              </thead>
+
+              <tbody style='color: #2F2F2F; background-color: #fff'>
+                <tr>
+                  <td style='padding: 15px 20px'>
+                    <p style='text-align: center'>We must verificate your <strong>e-mail</strong> address.</p>
+                    <p style='text-align: center'>It's simple, a one think you have to do -  is to follow this link:
+                      <strong>
+                        <a href='${BASE_URL}/api/users/verify/${verificationToken}'>
+                          click here
+                        </a>
+                      </strong>
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
         `,
   };
 
@@ -120,10 +140,6 @@ const login = async (req, res) => {
 
   if (!user.verify) {
     throw HttpError(403, 'Forbidden request due to not verified email');
-  }
-
-  if (!user.verify) {
-    throw HttpError(401, 'Email not verified');
   }
 
   const comparedPassword = await bcrypt.compare(password, user.password);
@@ -245,10 +261,81 @@ const editInfo = async (req, res) => {
       email: updatedUser.email,
       avatarURL: updatedUser.avatar.url,
       gender: updatedUser.gender,
-      dailyNorma: updatedUser.dailyNorma,
     },
   });
 };
+
+const dailyNormaUpdate = async (req, res) => {
+  const { dailyNorma } = req.body;
+  const user = req.user;
+
+  const { dailyNorma: newDailyNorma } = await User.findByIdAndUpdate(user._id, { dailyNorma }, { new: true });
+
+  res.json({ dailyNorma: newDailyNorma });
+}
+
+const restorePassword = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw HttpError(404, 'User with this e-mail was no registrated at yet');
+  }
+
+  if (!user.verify) {
+    throw HttpError(403, 'Forbidden request due to not verified email');
+  }
+
+  const customNanoid = customAlphabet('qQwWeErRtTyYuUiIoOpPaAsSdDfFgGhHjJkKlLzZxXcCvVbBnNmM');
+  const temporaryPassword = `!${customNanoid(9)}`;
+  const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+  await User.findOneAndUpdate(user._id, { password: hashedPassword });
+
+  const newEmailMessage = {
+    to: email,
+    subject: 'User password settings',
+    html: `
+      <table style='background-color: #2F2F2F; font-size: 16px; margin: 0 auto; border: none'>
+        <thead style='padding: 15px 20px'>
+          <tr>
+            <td>
+              <h2 style='color: #fff; text-align: center'>You forgot password?</h2>
+            </td>
+          </tr>
+        </thead>
+
+        <tbody style='color: #2F2F2F; padding: 15px 20px; background-color: #fff'>
+          <tr>
+            <td>
+              <p style='text-align: center'>We generated for you a new random password, witch you can enter into your account.</p>
+              <p style='text-align: center'>This is your temporary password: <strong>${temporaryPassword}</strong>.</p>
+              <p style='text-align: center'>We strongly reccomend you to change this passwrod as soon as possible on your profile config page.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  };
+
+  await sendEmail(newEmailMessage);
+
+  res.json({ message: 'Check e-mail address you`ve been indicated before' });
+}
+
+const deleteAccount = async (req, res) => {
+  const { password } = req.body;
+  const user = req.user;
+  const comparedPassword = await bcrypt.compare(password, user.password);
+
+  if (!comparedPassword) {
+    throw HttpError(401, 'Wrong password');
+  }
+
+  await User.findByIdAndDelete(user._id);
+
+  res.json({ message: 'Customer profile was deleted with success' });
+}
 
 export const authCtrl = {
   signup: ctrlWrapper(signup),
@@ -260,4 +347,7 @@ export const authCtrl = {
   uploadAvatar: ctrlWrapper(uploadAvatar),
   userInfo: ctrlWrapper(userInfo),
   editInfo: ctrlWrapper(editInfo),
+  restorePassword: ctrlWrapper(restorePassword),
+  deleteAccount: ctrlWrapper(deleteAccount),
+  dailyNormaUpdate: ctrlWrapper(dailyNormaUpdate),
 };
