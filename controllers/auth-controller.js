@@ -286,7 +286,7 @@ const restorePassword = async (req, res) => {
     throw HttpError(403, 'Forbidden request due to not verified email');
   }
 
-  const customNanoid = customAlphabet('qQwWeErRtTyYuUiIoOpPaAsSdDfFgGhHjJkKlLzZxXcCvVbBnNmM');
+  const customNanoid = customAlphabet('qQwWeErRtTyYuUiIoOpPaAsSdDfFgGhHjJkKlLzZxXcCvVbBnNmM1234567890');
   const temporaryPassword = `!${customNanoid(9)}`;
   const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
